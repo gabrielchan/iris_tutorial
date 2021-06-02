@@ -27,28 +27,19 @@ A **Random Forest Classifer** is an **ensemble**. It a type of "model" that oper
 >
 > In the tutorial that was followed, it used a Random Forest Classifer, but it's clear that the model of choice doesn't impact other key factors like hyperparameter tuning and improving performance by distrbuting the tuning onto a Spark cluster
 
-# High-Level Usage of Scikit-Learn
-Typically in a `scikit-learn` model:
-- `X = feature matrix`, that is the *learning dataset*
-- `y = target matrix`, that is the *associated labels*
+## Hyperparameters
+"**Parameters**" is a very common term in computer science. It refers to an input that a function requires. For example, `def some_function(int: important_number, string: cool_string)`:
+- The parameters in this context is `important_number` and `important_string`
+- When someone writes `some_function(100, "hello world")`, the integer 100 and string "hello world" are **arguments**
 
-> In particular to the Iris dataset, the feature matrix is data, the target matrix is target
->
-> `iris.target` -> `List[Int]` where:
-> - `iris.target.shape == (length_x, 1)` (a 1 dimensional array with length_x elements)
-> - returns a list of integers that represent an iris type label (e.g., Setosa = 0)
->
-> `iris.data` -> `List[List[String]]` where:
-> - `iris.data.shape == (length_x, num_of_features)` (a length_x dimension array with num_of_features elements each)
+However, in machine learning, and in particular a "machine learning model's parameters" may refer to it's *hyperparameter*. Unfortunately in machine learning, these terms are used quite interchangably (for example, `model.get_params()` would imply getting a model's parameters, but it's clear that it is it's hyperparameters). As such, context usually defines what someone is refering to. Therefore, it is important to understand the differences between the two.
 
-Then you can use a supervised learning model (from the `scikit-learn` library) to injest this data set then make future predictions
+**Model Hyperparameter** (often refered too simply as, hyperparameter): Parameters in a machine learning model that control and define how a model learns (e.g., `n_iter`, the number of iterations to train on, is a hyperparameter as it configures how many iterations a model needs to go through during learning)
+**Model Parammeters**: Variables that are learned and predicted by the model (e.g., the response matrix as a result of the predict on the iris dataset is a model parameter, as the model guessed it)
 
+In an simplified summary, hyperparameter's is the configuration and the model parameters is the results. 
 
-
-# Model Parameters
-This document will outline what every parameter in a machine learning model is and what it does. We will be commenting on the model parameters provided to the `scikit-learn` library. In particular, the output of `.get_params()`
-
-The following is the output of `model.get_params()` from `hyperparam_tune_example.py`. 
+You can see the following is the output of `model.get_params()` from `hyperparam_tune_example.py`. 
 ```
 {
   "cv": 5,                                                                       
@@ -87,6 +78,25 @@ The following is the output of `model.get_params()` from `hyperparam_tune_exampl
   "verbose": 0
 }
 ```
+As you can see, many of these parameters have nothing to do with flowers. Therefore it is clear that `model.get_params()` returns an object containing the model's hyperparameters.
+
+### Tuning/Optimization
+
+# High-Level Usage of Scikit-Learn
+Typically in a `scikit-learn` model:
+- `X = feature matrix`, that is the *learning dataset*
+- `y = target matrix`, that is the *associated labels*
+
+> In particular to the Iris dataset, the feature matrix is data, the target matrix is target
+>
+> `iris.target` -> `List[Int]` where:
+> - `iris.target.shape == (length_x, 1)` (a 1 dimensional array with length_x elements)
+> - returns a list of integers that represent an iris type label (e.g., Setosa = 0)
+>
+> `iris.data` -> `List[List[String]]` where:
+> - `iris.data.shape == (length_x, num_of_features)` (a length_x dimension array with num_of_features elements each)
+
+Then you can use a supervised learning model (from the `scikit-learn` library) to injest this data set then make future predictions
 
 # Appendix
 ## Terminology
