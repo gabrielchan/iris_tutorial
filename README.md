@@ -1,4 +1,4 @@
-# Random Forest Classifer on the Famous Iris Dataset
+# Supervised Learning on the Famous Iris Dataset
 **PLEASE NOTE** that this README is WIP
 
 ## The Problem & The Dataset
