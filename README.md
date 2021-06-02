@@ -1,4 +1,5 @@
 # Random Forest Classifer on the Famous Iris Dataset
+**PLEASE NOTE** that this README is WIP
 
 ## The Problem & The Dataset
 We attempt to predict the type of a iris given it's length of width of the petal and sepal (*sepal is the bigger petal at the bottom of a flower*). These values that we predict are known as **response**.
