@@ -14,6 +14,16 @@ from pprint import pprint
 from sklearn.utils import parallel_backend
 from joblibspark import register_spark
 
+# Spark
+from pyspark.sql import SparkSession
+
+spark = SparkSession \
+  .builder \
+  .appName("IrisTutorialSpark") \
+  .config("spark.executor.instances", "2") \
+  .config("spark.executor.memory", "4g") \
+  .getOrCreate()
+
 # Register Spark as Backend
 register_spark()
 
@@ -48,8 +58,10 @@ clf = RandomizedSearchCV(
 # Note that this is what we want to parallelize
 # model = clf.fit(X, y)
 
+# my_spark = SparkSession.builder
+
 # parallelize the tuning process by distributing it on Spark. When this runs you can check localhost:4040 for the UI
-with parallel_backend('spark', n_jobs=3):
+with parallel_backend(backend='spark', n_jobs=3):
   model = clf.fit(X, y)
 
 pprint(model.get_params())
@@ -57,3 +69,5 @@ pprint(model.best_estimator_)
 
 predictions = model.predict(X)
 print(predictions)
+
+spark.stop()
