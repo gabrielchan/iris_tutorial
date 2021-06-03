@@ -1,4 +1,4 @@
-# Random Forest Classifer on the Famous Iris Dataset
+# Supervised Learning on the Famous Iris Dataset
 **PLEASE NOTE** that this README is WIP
 
 ## The Problem & The Dataset
@@ -13,13 +13,13 @@ A model is provided a dataset that contains a table of the following columns (de
 
 As stated above, the goal of this exercise is to guess what type of iris is based on it's features. *We will attempt to guess the type of flower using supervised learning*. A machine learning model can do this through a form of supervised learning called **classification**. As the name suggests, it is the process of predicting the correct label of a given observation.
 
-## Model Choice
+# Model Choice
 The choice of your model ultimately depends on what type of data you have and what kind of predictions you're attempting to make. As the iris dataset is really a training wheels dataset for *supervised learning*, that is what we will do.
 
-### Decision Tree Classifier vs Random Forest Classifier
+## Decision Tree Classifier vs Random Forest Classifier
 Two important models in supervised learning for classification is the decision tree classifier and random forest classifier. [This article](https://towardsdatascience.com/understanding-random-forest-58381e0602d2) does a really good job of explaining and comparing the two.
 
-Put very simply, a [**Decision Tree Classifier**](https://www.youtube.com/watch?v=LDRbO9a6XPU) is a supervised machine learning model where it recursively builds a tree by identifying the “best boolean question to ask” at a node on the tree to split the data set in two until all the observations at each leaf is identical (that is, unmixed). A leaf is then created saying what the % chance a given set of data equates to a label. It uses **Gini Impuirity** (if we were to randomly attempt to match between data and labels, what is our probability of guessing wrong) and Information Gain (`IG = gini_impurity(parent) - cumulative_avg(gini_impurity(true_child), gini_impurity(false_child)`. How much does a boolean question reduce the impurity)
+Put very simply, a [**Decision Tree Classifier**](https://www.youtube.com/watch?v=LDRbO9a6XPU) is a supervised machine learning model where it recursively builds a tree by identifying the “best boolean question to ask” at a node on the tree to split the data set in two until all the observations at each leaf is identical (that is, unmixed). A leaf is then created saying what the % chance a given set of data equates to a label. It uses **Gini Impuirity** (if we were to randomly attempt to match between data and labels, what is our probability of guessing wrong) and **Information Gain** (`IG = gini_impurity(parent) - cumulative_avg(gini_impurity(true_child), gini_impurity(false_child)`. How much does a boolean question reduce the impurity)
 
 A **Random Forest Classifer** is an **ensemble**. It a type of "model" that operates be making a bunch of *uncorrelated* (or as little as possible) non-ensemble models (e.g., decision tree classifier) work together. The goal of this is to achieve greater predictions by having multiple models work to provide a result, and the most common result is the final result returned. The theory of this is similar to building an investment portfolio, where it's safety and performance consistency comes from diversifying (that is, uncorrelated) your assets such that individual downfalls don't impact the overall result.
 
@@ -27,28 +27,20 @@ A **Random Forest Classifer** is an **ensemble**. It a type of "model" that oper
 >
 > In the tutorial that was followed, it used a Random Forest Classifer, but it's clear that the model of choice doesn't impact other key factors like hyperparameter tuning and improving performance by distrbuting the tuning onto a Spark cluster
 
-# High-Level Usage of Scikit-Learn
-Typically in a `scikit-learn` model:
-- `X = feature matrix`, that is the *learning dataset*
-- `y = target matrix`, that is the *associated labels*
+# Hyperparameters
+"**Parameters**" is a very common term in computer science. It refers to an input that a function requires. For example, `def some_function(int: important_number, string: cool_string)`:
+- The parameters in this context is `important_number` and `important_string`
+- When someone writes `some_function(100, "hello world")`, the integer 100 and string "hello world" are **arguments**
 
-> In particular to the Iris dataset, the feature matrix is data, the target matrix is target
->
-> `iris.target` -> `List[Int]` where:
-> - `iris.target.shape == (length_x, 1)` (a 1 dimensional array with length_x elements)
-> - returns a list of integers that represent an iris type label (e.g., Setosa = 0)
->
-> `iris.data` -> `List[List[String]]` where:
-> - `iris.data.shape == (length_x, num_of_features)` (a length_x dimension array with num_of_features elements each)
+However, in machine learning, and in particular a "machine learning model's parameters" may refer to it's *hyperparameter*. Unfortunately in machine learning, these terms are used quite interchangably (for example, `model.get_params()` would imply getting a model's parameters, but it's clear that it is it's hyperparameters). As such, context usually defines what someone is refering to. Therefore, it is important to understand the differences between the two.
 
-Then you can use a supervised learning model (from the `scikit-learn` library) to injest this data set then make future predictions
+**Model Hyperparameter** (often refered too simply as, hyperparameter): Parameters in a machine learning model that control and define how a model learns (e.g., `n_iter`, the number of iterations to train on, is a hyperparameter as it configures how many iterations a model needs to go through during learning)
 
+**Model Parammeters**: Variables that are learned and predicted by the model (e.g., the response matrix as a result of the predict on the iris dataset is a model parameter, as the model guessed it)
 
+In an simplified summary, hyperparameter's is the configuration and the model parameters is the results. 
 
-# Model Parameters
-This document will outline what every parameter in a machine learning model is and what it does. We will be commenting on the model parameters provided to the `scikit-learn` library. In particular, the output of `.get_params()`
-
-The following is the output of `model.get_params()` from `hyperparam_tune_example.py`. 
+You can see the following is the output of `model.get_params()` from `hyperparam_tune_example.py`. 
 ```
 {
   "cv": 5,                                                                       
@@ -87,8 +79,50 @@ The following is the output of `model.get_params()` from `hyperparam_tune_exampl
   "verbose": 0
 }
 ```
+As you can see, many of these parameters have nothing to do with flowers. Therefore it is clear that `model.get_params()` returns an object containing the model's hyperparameters.
+
+## Tuning/Optimization
+**Hyperparameter Tuning** (also known as hyperparameter optimization) is choosing a set of optimal hyperparameters for a learning algorithm. Often this is done through another algorithm that will test different sets of hyperparameters on training data, and the set that performs the best is considered optimal
+- Two famous approaches are *Grid Search* and *Random Search*
+- `scikit-learn` provides both of these (and likely more)
+- *Like model choice, tuning method choice also depends on the dataset*
+
+### Grid Search vs Random Search
+**Grid Search**: Exhaustively testing and "ranking" a manually specified subset of hyperparamters
+
+**Random Search**: Randomly select, test and rank a subset of hyperparamters, where the space can be discrete, continuous and mixed
+
+Generally:
+- Random performs better than grid in a small subset
+- Random is [**Embarrassingly Parallel**](https://en.wikipedia.org/wiki/Embarrassingly_parallel), that is, it is trivial to parallelize the tasks
+- Random can allow previous knowledge to improve random selection
+
+## What are the Hyperparamters?
+IN PROGRESS
+
+# High-Level Usage of Scikit-Learn
+Typically in a `scikit-learn` model:
+- `X = feature matrix`, that is the *learning dataset*
+- `y = target matrix`, that is the *associated labels*
+
+> In particular to the Iris dataset, the feature matrix is data, the target matrix is target
+>
+> `iris.target` -> `List[Int]` where:
+> - `iris.target.shape == (length_x, 1)` (a 1 dimensional array with length_x elements)
+> - returns a list of integers that represent an iris type label (e.g., Setosa = 0)
+>
+> `iris.data` -> `List[List[String]]` where:
+> - `iris.data.shape == (length_x, num_of_features)` (a length_x dimension array with num_of_features elements each)
+
+Then you can use a supervised learning model (from the `scikit-learn` library) to injest this data set then make future predictions
 
 # Appendix
+## High-Level Process of Supervised Learning
+1. Train a machine learning model using *labeled data*
+  - Labeled data is just the dataset where each observation has a label assigned
+  - The model will learn the relationship between the label and features
+2. Make predictions on *unlabeled data*
+
 ## Terminology
 **Feature**: A column in a dataset
 - Also known as predictor, attribute, independent variable, input, regressor and/or covariate
@@ -109,16 +143,18 @@ The following is the output of `model.get_params()` from `hyperparam_tune_exampl
 
 **Regression**: Supervised learning where the response are *continous data*
 
-**Decision Tree Classifier**
+**Decision Tree Classifier/Learning**: A classification algorithm in machine learning that learns a dataset by asking boolean questions to split the dataset down a 2 child tree. As the tree is built, the model asks how "impure" the dataset is (after each split) and how much knowledge we gained per node to optimize the learning. (See Gini Impurity and Information Gain)
 
-**Gini Impurity**
+**Random Forest Classifier**: A classification algorithm that is an ensemble of many other randomly chosen uncorrelated non-ensemble algorithms, taking the most common result as the response
 
-**Random Forest Classifier**
+**Ensemble Learning**: Improve performance of a learning algorithm by combining a bunch models together
+- In the context of machine learning, it can be referred as "ensemble"
+- Similar to why people "diversify" their financial portfolio with un-related instruments to improve overall performance
 
-**Ensemble**
+**Hyperparametr Tuning**: Computationally optimizing the chosen set of hyperparameters 
 
-## High-Level Process of Supervised Learning
-1. Train a machine learning model using *labeled data*
-  - Labeled data is just the dataset where each observation has a label assigned
-  - The model will learn the relationship between the label and features
-2. Make predictions on *unlabeled data*
+**Grid Search**: Tune hyperparameters exhaustively from a manually provided set of hyperparameters
+
+**Random Search**: Tune hyperparameters by selecting the hyperparamters randomly
+
+**Embarassingly Parallel**: Machine learning tasks that can be parallelized trivially
