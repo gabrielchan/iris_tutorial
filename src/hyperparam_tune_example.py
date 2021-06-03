@@ -1,5 +1,8 @@
 # This file is following the example from https://jamesrledoux.com/code/randomized_parameter_search
-# Parallelizing 
+
+###########
+# Imports #
+###########
 
 # Import RandomSearchCV hyperparamter tuning from sklearn, Random Forest Classifer model, our Iris dataset, and distributions
 from sklearn.model_selection import RandomizedSearchCV
@@ -14,18 +17,28 @@ from pprint import pprint
 from sklearn.utils import parallel_backend
 from joblibspark import register_spark
 
-# Spark
+# Import SparkSession
 from pyspark.sql import SparkSession
 
+#######################
+# Spark Configuration #
+#######################
+
+# Register Spark as the parallel backend
+register_spark()
+
+# Declare the spark session ahead of time and provite the configurations
 spark = SparkSession \
   .builder \
   .appName("IrisTutorialSpark") \
+  .config("master", "local[4]") \
   .config("spark.executor.instances", "2") \
   .config("spark.executor.memory", "4g") \
   .getOrCreate()
 
-# Register Spark as Backend
-register_spark()
+##################
+# Model Learning #
+##################
 
 # Note that Iris data is our sample dataset for the RF classifer tutorial
 iris = datasets.load_iris()
@@ -54,20 +67,19 @@ clf = RandomizedSearchCV(
   random_state = 1
 )
 
-# train the metaestimator/tune it find the best model of the 100 iterations
-# Note that this is what we want to parallelize
-# model = clf.fit(X, y)
-
-# my_spark = SparkSession.builder
-
-# parallelize the tuning process by distributing it on Spark. When this runs you can check localhost:4040 for the UI
+# Train the metaestimator/tune it find the best model of the 100 iterations
+# Parallelize the tuning process by distributing it on Spark
+# Joblibspark will call .getOrCreate which will prioritize the existing session and not create a new one
 with parallel_backend(backend='spark', n_jobs=3):
   model = clf.fit(X, y)
 
+# Printing the hyperparamters and the optmial selection for educational purposes
 pprint(model.get_params())
 pprint(model.best_estimator_)
 
+# Response
 predictions = model.predict(X)
 print(predictions)
 
+# Stopping Spark
 spark.stop()
